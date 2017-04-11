@@ -20,6 +20,20 @@
 
   <ion-content class="has-subheader">
 
+<div class="button-bar">
+  <a ng-click="chartViewFunc(1)" ng-class="chartView == 1 ? 'active' : ''" class="button">Day</a>
+  <a ng-click="chartViewFunc(2)" ng-class="chartView == 2 ? 'active' : ''" class="button">Week</a>
+  <a ng-click="chartViewFunc(3)" ng-class="chartView == 3 ? 'active' : ''" class="button">Month</a>
+  <a ng-click="chartViewFunc(4)" ng-class="chartView == 4 ? 'active' : ''" class="button">Year</a>
+  <a ng-click="chartViewFunc(5)" ng-class="chartView == 5 ? 'active' : ''" class="button">Max</a>
+</div>
+
+<img ng-if="chartView == 1" ng-src="http://chart.finance.yahoo.com/z?s={{ticker}}&t=1d&q=l&l=on&z=m&a=vm" style="width: 100%">
+<img ng-if="chartView == 2" ng-src="http://chart.finance.yahoo.com/z?s={{ticker}}&t=1w&q=l&l=on&z=m&a=vm" style="width: 100%">
+<img ng-if="chartView == 3" ng-src="http://chart.finance.yahoo.com/z?s={{ticker}}&t=1m&q=l&l=on&z=m&a=vm" style="width: 100%">
+<div ng-if="chartView == 4" nv-chart="chartOptions" style="height: 70 vh;"> </div>
+<img ng-if="chartView == 5" ng-src="http://chart.finance.yahoo.com/z?s={{ticker}}&t=my&q=l&l=on&z=m&a=vm" style="width: 100%">
+
   <div class="card">
     <div class="item item-divider">Market Data</div>
     <div class="row row-center">

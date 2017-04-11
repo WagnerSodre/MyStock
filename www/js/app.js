@@ -1,4 +1,12 @@
-angular.module('MyStock', ['ionic', 'MyStock.controllers', 'MyStock.services', 'MyStock.filters', 'MyStock.directives'])
+angular.module('MyStock', [
+  'ionic',
+  'nvd3',
+  'nvChart',
+  'MyStock.controllers',
+  'MyStock.services',
+  'MyStock.filters',
+  'MyStock.directives'
+])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
