@@ -75,18 +75,15 @@ function($scope, $stateParams, $window, stockDataService, dateService, chartData
   $scope.chartViewFunc = function(n){
     $scope.chartView = n;
   };
-  /*function getPriceData(){
-    var promise = stockDataService.getPriceData($scope.ticker);
-    promise.then(function(data){
-      console.log(data);
-      $scope.stockPriceData = data;
-    });
-  }*/
   function getDetailsData(){
     var promise = stockDataService.getDetailsData($scope.ticker);
     promise.then(function(data){
-      console.log(data);
       $scope.stockDetailsData = data;
+      if(data.changePercent >= 0 && data !== null){
+        $scope.reactiveColor={'background-color':'#33cd5f'};
+      }else if(data.changePercent<0&&data!==null){
+        $scope.reactiveColor={'background-color':'#ef473a'};
+      }
     });
   }
 function getChartData(){
@@ -133,13 +130,12 @@ function getChartData(){
       return i;
     };
 
-    var marginBottom = ($window.innerWidth/100)*10;
+    var marginBottom = ($window.innerWidth / 100) * 10;
 
   	$scope.chartOptions = {
       chartType: 'linePlusBarWithFocusChart',
       data: 'myData',
-  		height: 500,
-      margin: {top: 15, right: 40, bottom: marginBottom, left: 70},
+      margin: {top: 15, right: 0, bottom: marginBottom, left: 0},
       interpolate: "cardinal",
       useInteractiveGuideline: false,
       yShowMaxMin: false,
@@ -154,7 +150,10 @@ function getChartData(){
       y2AxisTickFormat: y2TickFormat,
       y3AxisTickFormat: y3TickFormat,
       y4AxisTickFormat: y4TickFormat,
-      transitionDuration: 500
+      transitionDuration: 500,
+      y1AxisLabel: 'Price',
+      y3AxisLabel: 'Volume',
+      noData: 'Loading data...'
   	};
 
 }]);
