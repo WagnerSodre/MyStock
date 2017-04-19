@@ -1,7 +1,9 @@
 angular.module('MyStock', [
   'ionic',
+  'angular-cache',
   'nvd3',
   'nvChart',
+  'cb.x2js',
   'MyStock.controllers',
   'MyStock.services',
   'MyStock.filters',
