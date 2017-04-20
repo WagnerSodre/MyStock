@@ -1,69 +1,23 @@
 angular.module('MyStock.controllers', [])
 
-.controller('AppCtrl', function($scope, $ionicModal, $timeout) {
-
-  // With the new view caching in Ionic, Controllers are only called
-  // when they are recreated or on app start, instead of every page change.
-  // To listen for when this page is active (for example, to refresh data),
-  // listen for the $ionicView.enter event:
-  //$scope.$on('$ionicView.enter', function(e) {
-  //});
-
-  // Form data for the login modal
-  $scope.loginData = {};
-
-  // Create the login modal that we will use later
-  $ionicModal.fromTemplateUrl('templates/login.html', {
-    scope: $scope
-  }).then(function(modal) {
-    $scope.modal = modal;
-  });
-
-  // Triggered in the login modal to close it
-  $scope.closeLogin = function() {
-    $scope.modal.hide();
-  };
-
-  // Open the login modal
-  $scope.login = function() {
-    $scope.modal.show();
-  };
-
-  // Perform the login action when the user submits the login form
-  $scope.doLogin = function() {
-    console.log('Doing login', $scope.loginData);
-
-    // Simulate a login delay. Remove this and replace with your login
-    // code if using a login system
-    $timeout(function() {
-      $scope.closeLogin();
-    }, 1000);
-  };
-})
-
-.controller('MyStocksCtrl', ['$scope', function($scope) {
-  $scope.myStocksArray = [
-    {ticker: "AAPL"},
-    {ticker: "GPRO"},
-    {ticker: "FB"},
-    {ticker: "NFLX"},
-    {ticker: "TSLA"},
-    {ticker: "BRK-A"},
-    {ticker: "INTC"},
-    {ticker: "MSFT"},
-    {ticker: "GE"},
-    {ticker: "BAC"},
-    {ticker: "C"},
-    {ticker: "T"}
-  ];
+.controller('AppCtrl', ['$scope', 'modalService',
+  function($scope, modalService) {
+    $scope.modalService=modalService;
 }])
 
-.controller('StockCtrl', ['$scope', '$stateParams', '$window', '$ionicPopup', 'stockDataService', 'dateService', 'chartDataService', 'notesService', 'newsService',
-function($scope, $stateParams, $window, $ionicPopup, stockDataService, dateService, chartDataService, notesService, newsService) {
+.controller('MyStocksCtrl', ['$scope', 'myStocksArrayService',
+function($scope, myStocksArrayService) {
+  $scope.myStocksArray = myStocksArrayService;
+  console.log(myStocksArrayService);
+}])
+
+.controller('StockCtrl', ['$scope', '$stateParams', '$window', '$ionicPopup', 'followStockService', 'stockDataService', 'dateService', 'chartDataService', 'notesService', 'newsService',
+function($scope, $stateParams, $window, $ionicPopup, followStockService, stockDataService, dateService, chartDataService, notesService, newsService) {
   $scope.ticker = $stateParams.stockTicker;
   $scope.chartView = 4;
   $scope.oneYearAgoDate = dateService.oneYearAgoDate();
   $scope.todayDate = dateService.currentDate();
+  $scope.following = followStockService.checkFollowing($scope.ticker);
 
   console.log(dateService.currentDate());
   console.log(dateService.oneYearAgoDate());
@@ -73,6 +27,17 @@ function($scope, $stateParams, $window, $ionicPopup, stockDataService, dateServi
     getNews();
     $scope.stockNotes = notesService.getNotes($scope.ticker);
   });
+
+$scope.toggleFollow = function(){
+  if($scope.following){
+    followStockService.unfollow($scope.ticker);
+    $scope.following = false;
+  }else{
+    followStockService.follow($scope.ticker);
+    $scope.following = true;
+  }
+};
+
   $scope.openWindow = function(link){
     //TODO install and set up inAppBrowser
     console.log("openWindow -> "+link);
@@ -147,9 +112,9 @@ function($scope, $stateParams, $window, $ionicPopup, stockDataService, dateServi
     promise.then(function(data){
       $scope.stockDetailsData = data;
       if(data.changePercent >= 0 && data !== null){
-        $scope.reactiveColor={'background-color':'#33cd5f'};
+        $scope.reactiveColor={'background-color':'#33cd5f', 'border-color': 'rgba(255, 255, 255, .3)'};
       }else if(data.changePercent<0&&data!==null){
-        $scope.reactiveColor={'background-color':'#ef473a'};
+        $scope.reactiveColor={'background-color':'#ef473a', 'border-color': 'rgba(0, 0, 0, .2)'};
       }
     });
   }
@@ -222,5 +187,26 @@ function getChartData(){
       y3AxisLabel: 'Volume',
       noData: 'Loading data...'
   	};
+}])
 
-}]);
+.controller('SearchCtrl', ['$scope', '$state','modalService', 'searchService',
+  function($scope, $state, modalService, searchService){
+    $scope.closeModal = function(){
+      modalService.closeModal();
+    };
+    $scope.search = function(){
+      $scope.searchResults = '';
+      startSearch($scope.searchQuery);
+    };
+    var startSearch = ionic.debounce(function(query){
+      searchService.search(query)
+        .then(function(data){
+          $scope.searchResults = data;
+        });
+    }, 750);
+    $scope.goToStock = function(ticker){
+      modalService.closeModal();
+      $state.go('app.stock', {stockTicker: ticker});
+    };
+  }])
+  ;

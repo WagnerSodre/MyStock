@@ -6,6 +6,42 @@ angular.module('MyStock.services', [])
     }
   };
 })
+
+.service('modalService', function($ionicModal){
+  this.openModal = function(id){
+    var _this = this;
+
+    // Create the login modal that we will use later
+    if(id==1){
+      $ionicModal.fromTemplateUrl('templates/search.html', {
+        scope: null,
+        controller: 'SearchCtrl'
+      }).then(function(modal) {
+        _this.modal = modal;
+        _this.modal.show();
+      });
+    }else if(id==2){
+      $ionicModal.fromTemplateUrl('templates/login.html', {
+        scope: $scope
+      }).then(function(modal) {
+        $scope.modal = modal;
+      });
+    }else if(id==3){
+      $ionicModal.fromTemplateUrl('templates/login.html', {
+        scope: $scope
+      }).then(function(modal) {
+        $scope.modal = modal;
+      });
+    }
+  };
+  this.closeModal = function(){
+    var _this = this;
+    if(!_this.modal) return;
+    _this.modal.hide();
+    _this.modal.remove();
+  };
+})
+
 .factory('dateService', function($filter){
   var currentDate = function() {
     var d = new Date();
@@ -61,6 +97,79 @@ angular.module('MyStock.services', [])
     notesCache=CacheFactory.get('notesCache');
   }
   return notesCache;
+})
+
+.factory('fillMyStocksCacheService', function(CacheFactory){
+  var myStocksCache;
+  if (!CacheFactory.get('myStocksCache')){
+    myStocksCache = CacheFactory('myStocksCache', {
+      storageMode: 'localStorage'
+    });
+  }else {
+    myStocksCache = CacheFactory.get('myStocksCache');
+  }
+  var fillMyStocksCache = function(){
+    var myStocksArray = [
+      {ticker: "AAPL"},
+      {ticker: "GPRO"},
+      {ticker: "FB"},
+      {ticker: "NFLX"},
+      {ticker: "TSLA"},
+      {ticker: "BRK-A"},
+      {ticker: "INTC"},
+      {ticker: "MSFT"},
+      {ticker: "GE"},
+      {ticker: "BAC"},
+      {ticker: "C"},
+      {ticker: "T"}
+    ];
+    myStocksCache.put('myStocks', myStocksArray);
+  };
+  return{
+    fillMyStocksCache: fillMyStocksCache
+  };
+})
+
+.factory('myStocksCacheService', function(CacheFactory){
+  var myStocksCache = CacheFactory.get('myStocksCache');
+
+  return myStocksCache;
+})
+
+.factory('myStocksArrayService', function(fillMyStocksCacheService, myStocksCacheService){
+if(!myStocksCacheService.info('myStocks')){
+  fillMyStocksCacheService.fillMyStocksCache();
+}
+  var myStocks = myStocksCacheService.get('myStocks');
+  return myStocks;
+})
+
+.factory('followStockService', function(myStocksArrayService, myStocksCacheService){
+  return{
+    follow: function(ticker){
+      var stockToAdd = {"ticker": ticker};
+      myStocksArrayService.push(stockToAdd);
+      myStocksCacheService.put('myStocks', myStocksArrayService);
+    },
+    unfollow: function(ticker){
+      for (var i = 0; i < myStocksArrayService.length; i++) {
+        if(myStocksArrayService[i].ticker == ticker){
+          myStocksArrayService.splice(i, 1);
+          myStocksCacheService.remove('myStocks');
+          myStocksCacheService.put('myStocks', myStocksArrayService);
+          break;
+        }
+      }
+    },
+    checkFollowing: function(ticker){
+      for (var i = 0; i < myStocksArrayService.length; i++) {
+        if(myStocksArrayService[i].ticker == ticker){
+          return true;
+        }
+      }
+      return false;
+    }
+  };
 })
 
 .factory('stockDataService', function($q, $http, encodeURIService, stockDetailsCacheService){
@@ -207,4 +316,27 @@ var getDetailsData = function(ticker){
       }
   };
 })
+
+.factory('searchService', function($q, $http){
+  return{
+    search: function(query){
+      var deferred = $q.defer(),
+      // sometimes I have to copy and repaste the string below into the
+      // url variable for it to work. Not sure why that is.
+      // https://s.yimg.com/aq/autoc?query=aapl&region=CA&lang=en-CA
+      url = 'https://s.yimg.com/aq/autoc?query='+query+'&region=US&lang=en-US';
+      $http.get(url)
+        .success(function(data) {
+          var jsonData = data.ResultSet.Result;
+          deferred.resolve(jsonData);
+          console.log("jsonData: "+jsonData);
+        })
+        .catch(function(error) {
+          console.log(JSON.stringify(error));
+        });
+        return deferred.promise;
+      }
+  };
+})
+
     ;
