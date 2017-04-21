@@ -1,4 +1,4 @@
-angular.module('MyStock.directives', [])
+angular.module('MyStocks.directives', [])
 
 
 

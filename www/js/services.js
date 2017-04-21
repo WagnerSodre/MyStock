@@ -1,4 +1,5 @@
-angular.module('MyStock.services', [])
+angular.module('MyStocks.services', [])
+
 .factory('encodeURIService', function() {
   return {
     encode: function(string) {
@@ -22,15 +23,19 @@ angular.module('MyStock.services', [])
       });
     }else if(id==2){
       $ionicModal.fromTemplateUrl('templates/login.html', {
-        scope: $scope
+        scope: null,
+        controller: 'LoginSearchCtrl'
       }).then(function(modal) {
-        $scope.modal = modal;
+        _this.modal = modal;
+        _this.modal.show();
       });
     }else if(id==3){
-      $ionicModal.fromTemplateUrl('templates/login.html', {
-        scope: $scope
+      $ionicModal.fromTemplateUrl('templates/signup.html', {
+        scope: null,
+        controller: 'LoginSearchCtrl'
       }).then(function(modal) {
-        $scope.modal = modal;
+        _this.modal = modal;
+        _this.modal.show();
       });
     }
   };
@@ -56,6 +61,73 @@ angular.module('MyStock.services', [])
   return{
     currentDate: currentDate,
     oneYearAgoDate: oneYearAgoDate
+  };
+})
+
+.factory('firebaseRef', function($firebase){
+  var config = {
+    apiKey: "AIzaSyAKliHkCyecWeOvQZIkmkZLMD8BDhcmcp0",
+    authDomain: "mystocks-31d14.firebaseapp.com",
+    databaseURL: "https://mystocks-31d14.firebaseio.com",
+    projectId: "mystocks-31d14",
+    storageBucket: "mystocks-31d14.appspot.com",
+    messagingSenderId: "255608408059"
+  };
+
+  firebase.initializeApp(config);
+
+  var firebaseRef = firebase.database().ref();
+  return firebaseRef;
+})
+
+.factory('userService', function(firebaseRef, modalService){
+  var login = function(user){
+    firebase.auth().signInWithEmailAndPassword(user.email, user.password).catch(function(error) {
+    console.log("login");
+         // Handle Errors here.
+         var errorCode = error.code;
+         var errorMessage = error.message;
+         //TODO adapt the signup error popup
+         console.log("ok");
+         // [START_EXCLUDE]
+         if (errorCode === 'auth/wrong-password') {
+           alert('Wrong password.');
+         } else {
+           console.log(errorMessage);
+           modalService.closeModal();
+           alert(errorMessage);
+         }
+         console.log(error);
+         // [END_EXCLUDE]
+
+       });
+  };
+  var signup = function(user){
+    firebase.auth().createUserWithEmailAndPassword(user.email, user.password).catch(function(error) {
+        // Handle Errors here.
+        var errorCode = error.code;
+        var errorMessage = error.message;
+        //TODO adapt the signup error popup
+        // [START_EXCLUDE]
+        if (errorCode == 'auth/weak-password') {
+          alert('The password is too weak.');
+        } else {
+          console.log(errorMessage);
+          login(user);
+          //successful signup message
+          alert(errorMessage);
+        }
+        console.log(error);
+        // [END_EXCLUDE]
+      });
+  };
+  var logout = function(){
+    firebase.auth().signOut();
+  };
+  return{
+    login: login,
+    signup: signup,
+    logout: logout
   };
 })
 
@@ -180,6 +252,7 @@ var getDetailsData = function(ticker){
   stockDetailsCache=stockDetailsCacheService.get(cacheKey);
   query = 'select * from yahoo.finance.quote where symbol in ("'+ticker+'")';
   url='http://query.yahooapis.com/v1/public/yql?q=' + encodeURIService.encode(query) + '&format=json&env=store://datatables.org/alltableswithkeys&q=';
+console.log(url);
   if(stockDetailsCache){
     deferred.resolve(stockDetailsCache);
   }else {

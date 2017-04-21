@@ -1,3 +1,47 @@
+/* My Stocks */
+
+#my-stock .item-content{
+  padding: 5px 0px 5px 5px;
+}
+
+#my-stock h3{
+  font-size: 4.75vmin;
+}
+
+#my-stock h6{
+  font-size: 3vmin;
+  font-weight: 300;
+}
+
+#my-stock .stock-ticker-name{
+  float: left;
+}
+
+#container .buttons,
+#container .button{
+  border-top: 10px !important;
+  border-bottom-color: transparent !important;
+  background-image: none !important;
+  border-bottom: none !important;
+  align-self: center;
+  margin-right: -58px;
+}
+
+#stock-change{
+  padding: 5px 5px 5px 5px;
+  line-height: normal;
+  min-height: 10px;
+  border: none;
+  border-radius: 0;
+  font-size: 9pt;
+  color: #fff;
+  text-shadow: -1px 0 black, 0 1px black, 1px 0 black, 0 -1px black;
+}
+
+my-stock .inset-shadow{
+  -webkit-box-shadow: inset 0px 0px 15px rgba(0, 0, 0, 0.15);
+}
+
 /* Search */
 
 #search{
@@ -182,7 +226,19 @@
 }
 
 .text-capitalize{
-  text-transform: capitalize !important;  
+  text-transform: capitalize !important;
+}
+
+.color-red{
+  color: #ef473a !important;
+}
+
+.background-red{
+  background-color: #ef473a !important;
+}
+
+.background-green{
+  background-color: #33cd5f !important;
 }
 
 /* Chart Styles */

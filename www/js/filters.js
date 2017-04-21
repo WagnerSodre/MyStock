@@ -1,4 +1,4 @@
-angular.module('MyStock.filters', [])
+angular.module('MyStocks.filters', [])
 
 .filter('characters', function () {
   return function (input, chars, breakOnWord, ellipsis) {

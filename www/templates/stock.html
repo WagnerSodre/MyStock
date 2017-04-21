@@ -43,7 +43,7 @@
 <img ng-if="chartView == 5" ng-src="http://chart.finance.yahoo.com/z?s={{ticker}}&t=my&q=l&l=on&z=m&a=vm" style="width: 100%">
 
   <div class="card" id="market-data-card">
-    <div class="item item-divider"><span class="title">Market Data</span><span class="last-trade">Last trade at {{stockDetailsData.cTime}}</span></div>
+    <div class="item item-divider"><span class="title">Market Data</span><span class="last-trade">Last check at {{stockDetailsData.cTime}}</span></div>
     <div class="row row-center">
       <div class="col">Days low: </div>
       <div class="col col-20">{{stockDetailsData.DaysLow | shrinkNumber:2}}</div>

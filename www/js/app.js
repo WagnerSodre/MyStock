@@ -1,13 +1,14 @@
-angular.module('MyStock', [
+angular.module('MyStocks', [
   'ionic',
+  'firebase',
   'angular-cache',
   'nvd3',
   'nvChart',
   'cb.x2js',
-  'MyStock.controllers',
-  'MyStock.services',
-  'MyStock.filters',
-  'MyStock.directives'
+  'MyStocks.controllers',
+  'MyStocks.services',
+  'MyStocks.filters',
+  'MyStocks.directives'
 ])
 
 .run(function($ionicPlatform) {

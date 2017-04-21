@@ -1,14 +1,29 @@
-angular.module('MyStock.controllers', [])
+angular.module('MyStocks.controllers', [])
 
 .controller('AppCtrl', ['$scope', 'modalService',
   function($scope, modalService) {
     $scope.modalService=modalService;
 }])
 
-.controller('MyStocksCtrl', ['$scope', 'myStocksArrayService',
-function($scope, myStocksArrayService) {
-  $scope.myStocksArray = myStocksArrayService;
-  console.log(myStocksArrayService);
+.controller('MyStocksCtrl', ['$scope', 'followStockService', 'myStocksArrayService', 'stockDataService', 'stockDetailsCacheService',
+function($scope, followStockService, myStocksArrayService, stockDataService, stockDetailsCacheService) {
+  $scope.$on("$ionicView.afterEnter", function(){
+    $scope.getMyStocksData();
+  });
+  $scope.getMyStocksData = function(){
+    myStocksArrayService.forEach(function(stock){
+      var promise = stockDataService.getDetailsData(stock.ticker);
+      $scope.myStocksData = [];
+      promise.then(function(data){
+        $scope.myStocksData.push(stockDetailsCacheService.get(data.symbol));
+      });
+    });
+    $scope.$broadcast('scroll.refreshComplete');
+  };
+  $scope.unfollowStock=function(ticker){
+    followStockService.unfollow(ticker);
+    $scope.getMyStocksData();
+  };
 }])
 
 .controller('StockCtrl', ['$scope', '$stateParams', '$window', '$ionicPopup', 'followStockService', 'stockDataService', 'dateService', 'chartDataService', 'notesService', 'newsService',
@@ -209,4 +224,19 @@ function getChartData(){
       $state.go('app.stock', {stockTicker: ticker});
     };
   }])
+
+.controller('LoginSignupCtrl', ['$scope', 'modalService', 'userService',
+  function($scope, modalService, userService) {
+    $scope.user = {email: '', password: ''};
+    $scope.closeModal = function(){
+      modalService.closeModal();
+    };
+    $scope.signup = function(user){
+      userService.signup(user);
+    };
+    $scope.login = function(user){
+      userService.login(user);
+    };
+}])
+
   ;
