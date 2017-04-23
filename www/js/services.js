@@ -82,47 +82,19 @@ angular.module('MyStocks.services', [])
 
 .factory('userService', function(firebaseRef, modalService){
   var login = function(user){
-    firebase.auth().signInWithEmailAndPassword(user.email, user.password).catch(function(error) {
-    console.log("login");
-         // Handle Errors here.
-         var errorCode = error.code;
-         var errorMessage = error.message;
-         //TODO adapt the signup error popup
-         console.log("ok");
-         // [START_EXCLUDE]
-         if (errorCode === 'auth/wrong-password') {
-           alert('Wrong password.');
-         } else {
-           console.log(errorMessage);
-           modalService.closeModal();
-           alert(errorMessage);
-         }
-         console.log(error);
-         // [END_EXCLUDE]
-
-       });
+    return firebase.auth().signInWithEmailAndPassword(user.email, user.password).catch(function(error) {
+      var errorCode = error.code;
+      var errorMessage = error.message;
+    });
   };
   var signup = function(user){
-    firebase.auth().createUserWithEmailAndPassword(user.email, user.password).catch(function(error) {
-        // Handle Errors here.
-        var errorCode = error.code;
-        var errorMessage = error.message;
-        //TODO adapt the signup error popup
-        // [START_EXCLUDE]
-        if (errorCode == 'auth/weak-password') {
-          alert('The password is too weak.');
-        } else {
-          console.log(errorMessage);
-          login(user);
-          //successful signup message
-          alert(errorMessage);
-        }
-        console.log(error);
-        // [END_EXCLUDE]
-      });
+    return firebase.auth().createUserWithEmailAndPassword(user.email, user.password).catch(function(error) {
+      var errorCode = error.code;
+      var errorMessage = error.message;
+    });
   };
   var logout = function(){
-    firebase.auth().signOut();
+    return firebase.auth().signOut();
   };
   return{
     login: login,

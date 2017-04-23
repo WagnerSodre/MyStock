@@ -1,5 +1,6 @@
 angular.module('MyStocks', [
   'ionic',
+  'ngCordova',
   'firebase',
   'angular-cache',
   'nvd3',

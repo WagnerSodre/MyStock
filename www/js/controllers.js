@@ -26,8 +26,8 @@ function($scope, followStockService, myStocksArrayService, stockDataService, sto
   };
 }])
 
-.controller('StockCtrl', ['$scope', '$stateParams', '$window', '$ionicPopup', 'followStockService', 'stockDataService', 'dateService', 'chartDataService', 'notesService', 'newsService',
-function($scope, $stateParams, $window, $ionicPopup, followStockService, stockDataService, dateService, chartDataService, notesService, newsService) {
+.controller('StockCtrl', ['$scope', '$stateParams', '$window', '$ionicPopup', '$cordovaInAppBrowser', 'followStockService', 'stockDataService', 'dateService', 'chartDataService', 'notesService', 'newsService',
+function($scope, $stateParams, $window, $ionicPopup, $cordovaInAppBrowser, followStockService, stockDataService, dateService, chartDataService, notesService, newsService) {
   $scope.ticker = $stateParams.stockTicker;
   $scope.chartView = 4;
   $scope.oneYearAgoDate = dateService.oneYearAgoDate();
@@ -54,8 +54,12 @@ $scope.toggleFollow = function(){
 };
 
   $scope.openWindow = function(link){
-    //TODO install and set up inAppBrowser
-    console.log("openWindow -> "+link);
+    var inAppBrowserOptions = {
+      location: 'yes',
+      clearcache: 'yes',
+      toolbar: 'yes'
+    };
+    $cordovaInAppBrowser.open(link, '_blank', inAppBrowserOptions);
   };
   $scope.chartViewFunc = function(n){
     $scope.chartView = n;
@@ -225,17 +229,41 @@ function getChartData(){
     };
   }])
 
-.controller('LoginSignupCtrl', ['$scope', 'modalService', 'userService',
-  function($scope, modalService, userService) {
+.controller('LoginSignupCtrl', ['$scope', '$ionicPopup', 'modalService', 'userService',
+  function($scope, $ionicPopup, modalService, userService) {
     $scope.user = {email: '', password: ''};
     $scope.closeModal = function(){
       modalService.closeModal();
     };
     $scope.signup = function(user){
-      userService.signup(user);
+      if(user.password.length>=6&&user.email.includes('@')){
+        userService.signup(user);
+        $scope.login();
+      }else if(user.password.length<6){
+        var alertPopup = $ionicPopup.alert({
+         title: 'Error',
+         template: 'Your password is too weak! Use at least 6 characters'
+      });
+    }else if(!user.email.includes('@')){
+        var alertPopup = $ionicPopup.alert({
+          title: 'Error',
+          template: 'Please, use a valid email'
+        });
+      }
     };
     $scope.login = function(user){
-      userService.login(user);
+      var doLogin = userService.login(user);
+      console.log(doLogin);
+      //TODO optmize the login confirmation
+      if(doLogin.qa!==undefined){
+        $scope.closeModal();
+      }else{
+        var alertPopup = $ionicPopup.alert({
+         title: 'Error',
+         template: 'Email or Password are wrong'
+       });
+      $scope.user = {email: '', password: ''};
+      }
     };
 }])
 

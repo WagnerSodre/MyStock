@@ -19,7 +19,7 @@
           </div>
           <div id="container" class="buttons" side="right">
             <div class="button button-clear" ng-class="stock.changePercent >= 0 ? 'background-green' : 'background-red'">
-              <h6 id="stock-change" ><span ng-if="stockDetailsData.Change>0">+</span>{{stock.Change | shrinkNumber:2}}<br><span ng-if="stock.change>0">+</span>{{stock.changePercent | shrinkNumber:3}}%</h6>
+              <h6 id="stock-change_title" ><span ng-if="stockDetailsData.Change>0">+</span>{{stock.Change | shrinkNumber:2}}<br><span ng-if="stock.change>0">+</span>{{stock.changePercent | shrinkNumber:3}}%</h6>
             </div>
           </div>
         </div>
