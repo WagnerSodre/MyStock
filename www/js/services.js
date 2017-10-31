@@ -222,9 +222,11 @@ var getDetailsData = function(ticker){
   var deferred = $q.defer(),
   cacheKey = ticker,
   stockDetailsCache=stockDetailsCacheService.get(cacheKey);
+  const alphavnatageAPIKEY = TTXX7UZC6IXYTGRE
   query = 'select * from yahoo.finance.quote where symbol in ("'+ticker+'")';
-  url='http://query.yahooapis.com/v1/public/yql?q=' + encodeURIService.encode(query) + '&format=json&env=store://datatables.org/alltableswithkeys&q=';
-console.log(url);
+  //url='http://query.yahooapis.com/v1/public/yql?q=' + encodeURIService.encode(query) + '&format=json&env=store://datatables.org/alltableswithkeys&q=';
+  url = 'https://www.alphavantage.co/query?function=TIME_SERIES_INTRADAY&symbol='+encodeURIService.encode(query)+'&interval=15min&outputsize=full&apikey='+alphavnatageAPIKEY
+  console.log(url);
   if(stockDetailsCache){
     deferred.resolve(stockDetailsCache);
   }else {
